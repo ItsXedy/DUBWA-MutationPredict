@@ -9,4 +9,4 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/ItsXedy/DUBWA-Mutatio
 GUI
 ```
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ItsXedy/DUBWA-MutationPredict/refs/heads/main/DUBWAgui.lua"))()
-```SOLE
+```
