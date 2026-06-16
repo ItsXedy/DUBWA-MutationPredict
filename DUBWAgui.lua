@@ -149,38 +149,36 @@ end)
 -- INTERACTIVE WINDOW STATE HANDLERS
 -- ==========================================
 
--- Destroy Interface Action
 DestroyButton.MouseButton1Click:Connect(function()
 	ScreenGui:Destroy()
 end)
 
--- Structural Minimize to Circle Toggle
 local minimized = false
 ToggleButton.MouseButton1Click:Connect(function()
 	minimized = not minimized
 	if minimized then
-		-- Hide operational assets
+		-- Completely hide operational panels so they don't leak out
 		ContentFrame.Visible = false
 		ManualRefreshButton.Visible = false
 		DestroyButton.Visible = false
 		
-		-- Collapse layout style to standalone circle
-		MainFrame.Size = UDim2.new(0, 35, 0, 35)
+		-- Collapse frame layout styles to a standalone clean circular bubble
+		MainFrame.Size = UDim2.new(0, 45, 0, 45)
 		TitleBar.Size = UDim2.new(1, 0, 1, 0)
 		MainUICorner.CornerRadius = UDim.new(1, 0)
 		TitleUICorner.CornerRadius = UDim.new(1, 0)
 		
-		-- Center absolute icon state inside the bubble
+		-- Center the emoji absolute inside the bubble button
 		TitleText.Text = "⏳"
 		TitleText.Size = UDim2.new(1, 0, 1, 0)
 		TitleText.TextXAlignment = Enum.TextXAlignment.Center
 		
-		-- Offset button to toggle layout expansion back out
+		-- Stretch the minimize button invisible overlay across the whole circle
 		ToggleButton.Position = UDim2.new(0, 0, 0, 0)
 		ToggleButton.Size = UDim2.new(1, 0, 1, 0)
 		ToggleButton.Text = ""
 	else
-		-- Re-expand structures to menu panel metrics
+		-- Re-expand structural menu panel properties back out
 		MainFrame.Size = UDim2.new(0, 260, 0, 245)
 		TitleBar.Size = UDim2.new(1, 0, 0, 35)
 		MainUICorner.CornerRadius = UDim.new(0, 10)
@@ -194,7 +192,7 @@ ToggleButton.MouseButton1Click:Connect(function()
 		ToggleButton.Position = UDim2.new(1, -35, 0, 2)
 		ToggleButton.Text = "➖"
 		
-		-- Unhide operational frame layers
+		-- Restore visibility to elements
 		ContentFrame.Visible = true
 		ManualRefreshButton.Visible = true
 		DestroyButton.Visible = true
@@ -232,17 +230,20 @@ local function createTextLine(text, isActive, layoutOrder)
 	label.LayoutOrder = layoutOrder
 	
 	if isActive then
-		label.TextColor3 = Color3.fromRGB(85, 255, 127) -- Vibrant green
+		label.TextColor3 = Color3.fromRGB(85, 255, 127) -- Active Green
 	else
-		label.TextColor3 = Color3.fromRGB(220, 220, 225) -- Neutral off-white
+		label.TextColor3 = Color3.fromRGB(220, 220, 225) -- Off-white
 	end
 	
 	label.Parent = ContentFrame
 end
 
 local function updateUIStrings()
-	-- Only rebuild if layout is structural panel view
-	if minimized then return end
+	-- CRITICAL FIX: Stop loop rendering if the layout is currently a circle
+	if minimized then 
+		clearLabels()
+		return 
+	end
 	
 	clearLabels()
 	local currentActive = Workspace:GetAttribute("MutationEvent")
@@ -300,37 +301,14 @@ end
 -- Wire manual refresh input trigger
 ManualRefreshButton.MouseButton1Click:Connect(updateUIStrings)
 
--- Live running automation task pipeline loop
+-- Loop pipeline with safety configuration
 task.spawn(function()
 	while true do
 		pcall(updateUIStrings)
 		task.wait(1)
 	end
 end)
-TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 35)
-TitleBar.BackgroundColor3 = Color3.fromRGB(40, 44, 62)
-TitleBar.BorderSizePixel = 0
-TitleBar.Parent = MainFrame
-
-local TitleUICorner = Instance.new("UICorner")
-TitleUICorner.CornerRadius = UDim.new(0, 10)
-TitleUICorner.Parent = TitleBar
-
--- Title Text
-local TitleText = Instance.new("TextLabel")
-TitleText.Size = UDim2.new(1, -10, 1, 0)
-TitleText.Position = UDim2.new(0, 10, 0, 0)
-TitleText.BackgroundTransparency = 1
-TitleText.Text = "⏳ EVENT TIME STRINGS"
-TitleText.TextColor3 = Color3.fromRGB(240, 240, 240)
-TitleText.Font = Enum.Font.GothamBold
-TitleText.TextSize = 13
-TitleText.TextXAlignment = Enum.TextXAlignment.Left
-TitleText.Parent = TitleBar
-
--- Minimize/Toggle Button
-local ToggleButton = Instance.new("TextButton")
+n")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Size = UDim2.new(0, 30, 0, 30)
 ToggleButton.Position = UDim2.new(1, -35, 0, 2)
